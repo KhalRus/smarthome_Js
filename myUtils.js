@@ -1,20 +1,19 @@
 import { promisify } from 'util';
 import { exec } from 'child_process';
-import {readFileSync as fsReadFileSync} from 'fs';
-import {loadavg as osLoadavg, homedir as osHomedir} from 'os';
+import {readFileSync, appendFileSync} from 'fs';
+import {loadavg, homedir} from 'os';
 import {get as httpGet} from 'http';
 import {get as httpsGet} from 'https';
 import { MongoClient } from 'mongodb';
 
 // импорт констант
 import {T_CPU, LOAD_AVG, T_MB, T_HDD, LOAD_RAM, USED_HDD, USED_SWAP, FAN_BOX, FAN_CPU, ERR_HDD, NET_TX_H, NET_RX_H, QBIT_TX_H, QBIT_RX_H,
-  NET_TX_D, NET_RX_D, QBIT_TX_D, QBIT_RX_D, T_ROOM1, T_SERVBOX, T_OUTSIDE, AL_INFO, AL_WARN, AL_ERR, BYTES_IN_MB, QBIT_URL} from './public/js/sh_const.js';
+  NET_TX_D, NET_RX_D, QBIT_TX_D, QBIT_RX_D, T_ROOM1, T_SERVBOX, T_OUTSIDE, AL_INFO, AL_WARN, AL_ERR, BYTES_IN_MB, QBIT_URL, TIME_START, LAST_IND} from './public/js/sh_const.js';
 
 export const mongoClient = new MongoClient("mongodb://localhost:27017/");
 
 export let sets;                                   // массив настроек диагностики, сохранен в Json 'settings.json'
 
-function cl(st) {console.log(st)}   // debug функция
 const execPr = promisify(exec);     // функция для запроса данных внешних программ
 
 let tgMess = 'https://api.telegram.org/bot';
@@ -51,7 +50,7 @@ export function logString(mTime, mErr, mMess) {
   } else if (mErr == AL_ERR) {
     outStr += 'err! ';
   }
-
+  appendFileSync('./doc/sh_log.txt', outStr + mMess + '\n', 'utf8');
   console.log(outStr + mMess);
 }
 
@@ -100,7 +99,7 @@ async function checkServerInfo() {
   let currTime = currTimeD.getTime();
 
   try {
-    sets[LOAD_AVG].val  = Math.round(osLoadavg()[0] * 100);                                                       // усредненная минутная загрузка системы
+    sets[LOAD_AVG].val = Math.round(loadavg()[0] * 100);                                                       // усредненная минутная загрузка системы
 
     const sfree = (await execPr('free -m')).stdout.split('\n');                                                   // запрос из программы free
     sets[LOAD_RAM].val  = myParseInt(sfree[1].slice(22, 37), sets[LOAD_RAM].tag)
@@ -155,7 +154,7 @@ async function checkServerInfo() {
     let mRecs = [];  // массив для записи в БД
 
     // обработка данных состояния сервера
-    for (let i = 0; i < sets.length; i++) {
+    for (let i = 0; i < LAST_IND; i++) {
       // если изменение значения больше уставки дельты или прошлое значение записано давно (больше дельты времени, дельта дана в секундах), то пишем в базу, через массив
       if ( (Math.abs(sets[i].val - sets[i].prevValue) > sets[i].deltaValue) || ( currTime - sets[i].prevTime >= sets[i].deltaTime * 1000 ) ) {
         let tTime;          // для траффика время указывается округленное на начало часа (суток), для температуры время поступл. данных, для остальных показателей - текущее
@@ -207,7 +206,7 @@ async function checkServerInfo() {
 
     // запись в БД массива
     if (mRecs.length > 0) {
-      await mongoClient.db("smarthome2").collection("server").insertMany(mRecs);
+     await mongoClient.db("smarthome").collection("server").insertMany(mRecs);
     }
 
   } catch (e) {
@@ -221,13 +220,15 @@ async function initModule() {
   let currTime = currTimeD.getTime();
 
   try {
-    sets = JSON.parse(fsReadFileSync('./doc/settings.json', 'utf8'));
+    sets = JSON.parse(readFileSync('./doc/settings.json', 'utf8'));
 
     for (let vlset of sets) {                // т.к. в Json нет Infinity, то заменяем вручную
       for (let val in vlset) {
         if (vlset[val] == "Infinity") vlset[val] = Infinity;
       }
     }
+
+    sets[TIME_START].val = currTime;  // время запуска сервера
 
     sets[T_ROOM1].prevTime = currTime;                    // чтобы не записать в БД начальные значения
     sets[T_SERVBOX].prevTime = currTime;
@@ -245,7 +246,7 @@ async function initModule() {
     sets[QBIT_TX_D].prevTime = initTime;
     sets[QBIT_RX_D].prevTime = initTime;
 
-    let setsApp = JSON.parse(fsReadFileSync(osHomedir() + '/doc/smarthome/sett.json', 'utf8'));               // настройки телеги, пароли БД
+    let setsApp = JSON.parse(readFileSync(homedir() + '/doc/smarthome/sett.json', 'utf8'));               // настройки телеги, пароли БД
     tgMess = tgMess + setsApp.tg_token + '/sendMessage?chat_id=' + setsApp.tg_chat + '&parse_mode=html&text=';
 
     await mongoClient.connect();

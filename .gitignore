@@ -1,0 +1,9 @@
+test.js
+doc
+other
+node_modules
+*.png
+serv.js
+package-lock.json
+public/temp.html
+public/js/bundle.js

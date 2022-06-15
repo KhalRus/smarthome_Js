@@ -253,5 +253,9 @@
     "currTime": 0,
     "deltaValue": 0.4,
     "deltaTime": 1800
+  },
+  {
+    "tag": "startAppTime",
+    "val": 0
   }
 ]

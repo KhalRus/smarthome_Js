@@ -18,7 +18,7 @@ body {
   margin-right: 1%;
 }
 
-.logo div {
+.logoText {
   font-family: Tahoma, Geneva, Verdana, sans-serif;
   font-weight: bold;
   word-spacing: 4px;
@@ -32,31 +32,62 @@ body {
   margin: auto 60px;
 }
 
-.content {
-  width: 100%;
-  display: flex;
-  flex-flow: row wrap;
-  background-color: rgb(245, 248, 243);
+footer {
+  font-family: Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: bold;
+  word-spacing: 4px;
+  font-size: 175%;
+  color: rgb(221, 222, 238);
 }
 
-aside {
-  flex: 1 1 710px;
-  margin: 10px;
+.content {
+  width: 100%;
+  background-color: rgb(245, 248, 243);
+  display: grid;
+  grid-template-columns: 350px 1fr;
 }
 
 .chart {
   box-shadow: 0 0 5px 3px rgba(44,82,100,.75);
 }
 
-.chart:first-of-type {
-  margin-bottom: 17px;
+.bar {
+  background-color: rgb(198, 240, 247);
+  margin-top: 8px;
+  margin-left: 7%;
+  margin-right: 10px;
+  padding: 4px;
+  border-radius: 4px;
+  border: 1px solid #bbb;
 }
 
-nav.left {
-  flex: 1 1 240px;
-  margin: 10px;
+.barStr {
+  font-family: Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: bold;
+  color: rgb(7, 88, 76);
   display: flex;
-  flex-flow: column nowrap;
+  justify-content: space-between;
+  margin: 4px;
+}
+
+.grid4 {
+  margin: 10px;
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: minmax(500px, 1fr) minmax(500px, 1fr);
+  grid-template-rows: minmax(400px, 1fr) minmax(400px, 1fr);
+}
+
+.grid2 {
+  margin: 10px;
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: minmax(1000px, 1fr);
+  grid-template-rows: minmax(400px, 1fr) minmax(400px, 1fr);
+}
+
+.menuInfo {
+  margin: 10px;
 }
 
 .button {
@@ -67,11 +98,10 @@ nav.left {
   background-color: #33C3F0;
   border-color: #33C3F0;
   text-align: center;
-  font-size: 11px;
+  font-size: 17px;
   font-weight: 600;
   line-height: 38px;
   letter-spacing: .1rem;
-  text-transform: uppercase;
   text-decoration: none;
   white-space: nowrap;
   border-radius: 4px;
@@ -80,11 +110,55 @@ nav.left {
   margin-bottom: 5px;
   margin-left: 4%;
   margin-right: 4%;
-  width: 92%;
+  width: 96%;
 }
 
 .button:hover {
-  color: #555;
-  background-color: transparent;
-  border-color: #33C3F0;
+  background-color: rgba(31, 185, 134, 0.7);
+}
+
+.active {
+  background-color: rgb(31, 185, 134);
+}
+
+@media (min-width: 601px) and (max-width:1400px) {
+  .content {
+      grid-template-columns: 1fr 3fr;
+    }
+
+  .grid4 {
+    grid-template-columns: minmax(300px, 1000px);
+    grid-template-rows: repeat(4, minmax(310px, 1fr));
+  }
+
+  .grid2 {
+    grid-template-columns: minmax(300px, 1000px);
+    grid-template-rows: repeat(2, minmax(310px, 1fr));
+  }
+}
+
+@media (max-width:600px) {
+  .content {
+      display: inline-block;
+    }
+
+  .menuInfo {
+    display: none;
+  }
+
+  .grid4 {
+    grid-template-columns: minmax(300px, 600px);
+    grid-template-rows: repeat(4, minmax(200px, 1fr));
+  }
+
+  .grid2 {
+    grid-template-columns: minmax(300px, 600px);
+    grid-template-rows: repeat(2, minmax(200px, 1fr));
+  }
+
+  .bar {
+    margin-top: 8px;
+    margin-left: 8px;
+    margin-right: 8px;
+  }
 }

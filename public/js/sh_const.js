@@ -20,6 +20,8 @@ export const T_CPU  = 0,
   T_ROOM1 = 18,
   T_SERVBOX = 19,
   T_OUTSIDE = 20,
+  TIME_START = 21,
+  LAST_IND = 20,
 
   // константы логов
   AL_INFO  = 0,
@@ -30,7 +32,9 @@ export const T_CPU  = 0,
   BYTES_IN_MB  = 1_048_576,
 
   // запрос данных QbitTorrent
-  QBIT_URL = 'http://localhost:8080/query/transferInfo';
+  QBIT_URL = 'http://localhost:8080/query/transferInfo',
+
+  MSEK_SUT = 86_400_000;  // милисекунд в сутках
 
 // const TOTAL_RAM  = 4_015_362_048;
 // const TOTAL_HDD  = 3_932_681_388_032;

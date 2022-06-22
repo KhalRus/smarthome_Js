@@ -10,8 +10,7 @@ import { MongoClient } from 'mongodb';
 import {T_CPU, LOAD_AVG, T_MB, T_HDD, LOAD_RAM, USED_HDD, USED_SWAP, FAN_BOX, FAN_CPU, ERR_HDD, NET_TX_H, NET_RX_H, QBIT_TX_H, QBIT_RX_H,
   NET_TX_D, NET_RX_D, QBIT_TX_D, QBIT_RX_D, T_ROOM1, T_SERVBOX, T_OUTSIDE, AL_INFO, AL_WARN, AL_ERR, BYTES_IN_MB, QBIT_URL, TIME_START, LAST_IND} from './public/js/sh_const.js';
 
-export const mongoClient = new MongoClient("mongodb://localhost:27017/");
-
+export let mongoClient;
 export let sets;                                   // массив настроек диагностики, сохранен в Json 'settings.json'
 
 const execPr = promisify(exec);     // функция для запроса данных внешних программ
@@ -154,7 +153,7 @@ async function checkServerInfo() {
     let mRecs = [];  // массив для записи в БД
 
     // обработка данных состояния сервера
-    for (let i = 0; i < LAST_IND; i++) {
+    for (let i = 0; i <= LAST_IND; i++) {
       // если изменение значения больше уставки дельты или прошлое значение записано давно (больше дельты времени, дельта дана в секундах), то пишем в базу, через массив
       if ( (Math.abs(sets[i].val - sets[i].prevValue) > sets[i].deltaValue) || ( currTime - sets[i].prevTime >= sets[i].deltaTime * 1000 ) ) {
         let tTime;          // для траффика время указывается округленное на начало часа (суток), для температуры время поступл. данных, для остальных показателей - текущее
@@ -206,7 +205,7 @@ async function checkServerInfo() {
 
     // запись в БД массива
     if (mRecs.length > 0) {
-     await mongoClient.db("smarthome").collection("server").insertMany(mRecs);
+      await mongoClient.db("smarthome").collection("server").insertMany(mRecs);
     }
 
   } catch (e) {
@@ -249,6 +248,7 @@ async function initModule() {
     let setsApp = JSON.parse(readFileSync(homedir() + '/doc/smarthome/sett.json', 'utf8'));               // настройки телеги, пароли БД
     tgMess = tgMess + setsApp.tg_token + '/sendMessage?chat_id=' + setsApp.tg_chat + '&parse_mode=html&text=';
 
+    mongoClient = new MongoClient(setsApp.mongodb);
     await mongoClient.connect();
     logString(currTime, AL_INFO, 'БД MongoDB подключена!');
   } catch (e) {

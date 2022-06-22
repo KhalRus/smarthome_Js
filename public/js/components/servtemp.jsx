@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
-import { optLine1, optLine2, changeTitle } from '../sh_lib.js';
+import { optLine1, optLine2, changeOptions } from '../sh_lib.js';
 import { T_CPU, T_MB, T_HDD, FAN_BOX, FAN_CPU, T_SERVBOX, LAST_IND } from '../sh_const.js';
 
-function ServTempSut() {
+function ServTempSut(props) {
   const [series1, setSeries1] = useState([]);
   const [series2, setSeries2] = useState([]);
 
@@ -47,10 +47,10 @@ function ServTempSut() {
 
   return <div className="grid2">
     <div className="chart">
-      <Chart options={changeTitle(optLine1, 'Температура °C')} series={series1} type="line" height="100%" />
+      <Chart options={changeOptions(optLine1, 'Температура °C', props.height)} series={series1} type="line" height={props.height} />
     </div>
     <div className="chart">
-      <Chart options={changeTitle(optLine2, 'Вентиляторы (rpm)')} series={series2} type="line" height="100%" />
+      <Chart options={changeOptions(optLine2, 'Вентиляторы (rpm)', props.height)} series={series2} type="line" height={props.height} />
     </div>
   </div>;
 }

@@ -1,21 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
-import { optLine1, optLine2, optLine3, optBar1, changeOptions } from '../sh_lib.js';
-import { T_CPU, LOAD_AVG, T_MB, T_HDD, LOAD_RAM, USED_SWAP, NET_TX_H, NET_RX_H, T_ROOM1, T_SERVBOX, T_OUTSIDE, LAST_IND } from '../sh_const.js';
+import { optLine1, optLine2, changeOptions } from '../sh_lib.js';
+import { T_CPU, T_MB, T_HDD, T_ROOM1, T_SERVBOX, T_OUTSIDE, LAST_IND } from '../sh_const.js';
 
-function MenuMain(props) {
+function TempMes(props) {
   const [series1, setSeries1] = useState([]);
   const [series2, setSeries2] = useState([]);
-  const [series3, setSeries3] = useState([]);
-  const [series4, setSeries4] = useState([]);
 
   function setChart(dat) {
     let arrGraph = [];
-    for (let i = 0; i <= LAST_IND; i++) { arrGraph.push([]) };
+    let prevData = [];
+    let lastData = [];
+    for (let i = 0; i <= LAST_IND; i++) {
+      arrGraph.push([]);
+      prevData.push(-100);
+      lastData.push(0);
+    };
 
     dat.forEach(d => {  // распределение данных по отдельным подмассивам
-      arrGraph[d.param].push([d.time, d.value]);
+      let delt = 1;
+      if (d.param == T_CPU) delt = 2;
+
+      if ( Math.abs(d.value - prevData[d.param]) >= delt ) {  // фильтруем незначительные для мес. графика отклонения, для ускорения отрисовки
+        arrGraph[d.param].push([d.time, d.value]);
+        prevData[d.param] = d.value;
+      }
+      lastData[d.param] = [d.time, d.value];
     });
+
+    for (let i = 0; i <= LAST_IND; i++) {  // записываем последние данные, чтобы не обрезались крайние значения на графике
+      arrGraph[i].push(lastData[i]);
+    }
+
 
     setSeries1([{
       name: 'CPU',
@@ -38,48 +54,23 @@ function MenuMain(props) {
       name: 'Улица',
       data: arrGraph[T_OUTSIDE]
     }]);
-
-    setSeries3([{
-      name: 'RAM (Mb)',
-      data: arrGraph[LOAD_RAM]
-    }, {
-      name: 'loadAvg',
-      data: arrGraph[LOAD_AVG]
-    }, {
-      name: 'Swap (Mb)',
-      data: arrGraph[USED_SWAP]
-    }]);
-
-    setSeries4([{
-      name: 'Tx',
-      data: arrGraph[NET_TX_H]
-    }, {
-      name: 'Rx',
-      data: arrGraph[NET_RX_H]
-    }]);
   }
 
   useEffect(() => {
-    fetch('/qServDay')
+    fetch('/qTempMes')
       .then(res => res.json())
       .then(dat => setChart(dat))
       .catch(err => console.log(err))
   }, []);
 
-  return <div className="grid4">
+  return <div className="grid2">
     <div className="chart">
       <Chart options={changeOptions(optLine1, 'Температура °C', props.height)} series={series1} type="line" height={props.height} />
     </div>
     <div className="chart">
       <Chart options={changeOptions(optLine2, 'Температура °C', props.height)} series={series2} type="line" height={props.height} />
     </div>
-    <div className="chart">
-      <Chart options={changeOptions(optLine3, 'Загрузка сервера', props.height)} series={series3} type="line" height={props.height} />
-    </div>
-    <div className="chart">
-      <Chart options={changeOptions(optBar1, 'Траффик общий (мегабайт)', props.height)} series={series4} type="bar" height={props.height} />
-    </div>
   </div>;
 }
 
-export default MenuMain;
+export default TempMes;

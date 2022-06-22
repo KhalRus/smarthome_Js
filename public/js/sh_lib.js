@@ -1,5 +1,8 @@
 export const optLine1 = {    // линейный график
   chart: {
+    toolbar: {
+      show: true
+    },
     animations: {
       enabled: true,
       dynamicAnimation: {
@@ -62,6 +65,9 @@ export const optLine1 = {    // линейный график
 
 export const optLine2 = {    // линейный график
   chart: {
+    toolbar: {
+      show: true
+    },
     animations: {
       enabled: true,
       dynamicAnimation: {
@@ -124,6 +130,9 @@ export const optLine2 = {    // линейный график
 
 export const optLine3 = {    // линейный график
   chart: {
+    toolbar: {
+      show: true
+    },
     animations: {
       enabled: true,
       dynamicAnimation: {
@@ -186,6 +195,9 @@ export const optLine3 = {    // линейный график
 
 export const optLine4 = {    // линейный график
   chart: {
+    toolbar: {
+      show: true
+    },
     animations: {
       enabled: true,
       dynamicAnimation: {
@@ -247,6 +259,11 @@ export const optLine4 = {    // линейный график
 };
 
 export const optBar1 = {    // столбчатый график
+  chart: {
+    toolbar: {
+      show: true
+    }
+  },
   title: {
     text: 'Трафик общий (Мегабайт)',
     align: 'center'
@@ -283,6 +300,11 @@ export const optBar1 = {    // столбчатый график
 };
 
 export const optBar2 = {    // столбчатый график
+  chart: {
+    toolbar: {
+      show: true
+    }
+  },
   title: {
     text: 'Трафик общий (Мегабайт)',
     align: 'center'
@@ -319,6 +341,11 @@ export const optBar2 = {    // столбчатый график
 };
 
 export const optBar3 = {    // столбчатый график
+  chart: {
+    toolbar: {
+      show: true
+    }
+  },
   title: {
     text: 'Трафик общий (Мегабайт)',
     align: 'center'
@@ -355,6 +382,11 @@ export const optBar3 = {    // столбчатый график
 };
 
 export const optBar4 = {    // столбчатый график
+  chart: {
+    toolbar: {
+      show: true
+    }
+  },
   title: {
     text: 'Трафик общий (Мегабайт)',
     align: 'center'
@@ -390,8 +422,13 @@ export const optBar4 = {    // столбчатый график
   },
 };
 
-export function changeTitle(options, title) {
+export function changeOptions(options, title, height) {
   options.title.text = title;
+  if ((+height) < 300) {  // для мобильной версии кнопки не выводим, перекрывают заголовок
+    options.chart.toolbar.show = false;
+  } else {
+    options.chart.toolbar.show = true;
+  }
   return options;
 }
 

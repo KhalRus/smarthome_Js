@@ -24,6 +24,44 @@ function InfoBar() {
 
   return <div className="bar">
     <div className="barStr">
+      <span>Темп. Улица</span>
+      <span>{info.tOutside}°</span>
+    </div>
+    <div className="barStr">
+      <span>Темп. Дом</span>
+      <span>{info.tRoom1}°</span>
+    </div>
+    <div className="barStr">
+      <span>Темп. Серв.</span>
+      <span>{info.tBox}°</span>
+    </div>
+    <hr />
+    <div className="barStr">
+      <span>Темп. CPU</span>
+      <span>{info.tCpu}°</span>
+    </div>
+    <div className="barStr">
+      <span>Темп. HDD</span>
+      <span>{info.tHdd}°</span>
+    </div>
+    <div className="barStr">
+      <span>Темп. MB</span>
+      <span>{info.tMb}°</span>
+    </div>
+    <div className="barStr">
+      <span>HDD исп.</span>
+      <span>{info.usedHdd}%</span>
+    </div>
+    <div className="barStr">
+      <span>ОЗУ исп.</span>
+      <span>{info.usedRam} МБ</span>
+    </div>
+    <div className="barStr">
+      <span>Swap исп.</span>
+      <span>{info.usedSwap} МБ</span>
+    </div>
+    <hr />
+    <div className="barStr">
       <span>Загрузка серв.</span>
       <span>{info.load}</span>
     </div>
@@ -34,10 +72,6 @@ function InfoBar() {
     <div className="barStr">
       <span>Вр. раб. прилож.</span>
       <span>{info.appUptime}</span>
-    </div>
-    <div className="barStr">
-      <span>ОЗУ исп.</span>
-      <span>{info.usedRam} МБ.</span>
     </div>
   </div>;
 }

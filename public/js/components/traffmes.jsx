@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
-import { optBar1, optBar2, changeTitle } from '../sh_lib.js';
+import { optBar1, optBar2, changeOptions } from '../sh_lib.js';
 import { NET_TX_D, NET_RX_D, QBIT_TX_D, QBIT_RX_D, LAST_IND } from '../sh_const.js';
 
-function TraffMes() {
+function TraffMes(props) {
   const [series1, setSeries1] = useState([]);
   const [series2, setSeries2] = useState([]);
 
@@ -41,10 +41,10 @@ function TraffMes() {
 
   return <div className="grid2">
     <div className="chart">
-      <Chart options={changeTitle(optBar1, 'Траффик Qbit (мегабайт)')} series={series1} type="bar" height="100%" />
+      <Chart options={changeOptions(optBar1, 'Траффик Qbit (мегабайт)', props.height)} series={series1} type="bar" height={props.height} />
     </div>
     <div className="chart">
-      <Chart options={changeTitle(optBar2, 'Траффик общий (мегабайт)')} series={series2} type="bar" height="100%" />
+      <Chart options={changeOptions(optBar2, 'Траффик общий (мегабайт)', props.height)} series={series2} type="bar" height={props.height} />
     </div>
   </div>;
 }

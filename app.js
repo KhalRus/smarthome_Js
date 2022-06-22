@@ -32,7 +32,7 @@ app.get('/senddata', async (req, res) => {        // записываем пол
     checkMegaData(currTime, T_SERVBOX, +req.query.tBox);
     checkMegaData(currTime, T_OUTSIDE, +req.query.tOutside);
   }
-  res.send('#$dat transfer response');
+  res.send('#$dat transfer response');  // болванка, потом будут передаваться команды управления для Меги
 });
 
 app.get('/qServDay', async (req, res) => {
@@ -79,8 +79,19 @@ app.get('/qTraffMes', async (req, res) => {
   }
 });
 
+app.get('/qTempMes', async (req, res) => {
+  const collection = mongoClient.db("smarthome").collection("server");
+  const qTime = Date.now() - MSEK_SUT * 30;
+  try {
+    const dat = await collection.find({ time: { $gt: qTime }, param: { $in: [T_CPU, T_MB, T_HDD, T_ROOM1, T_SERVBOX, T_OUTSIDE] } }).toArray();
+    res.send(dat);
+  } catch (e) {
+    logString(Date.now(), AL_ERR, e.toString());
+  }
+});
+
 app.get('/qInfoBar', async (req, res) => {
-  function sekToTimeStr(sek) {  // форматирование времени в секундах в DD HH MM SS
+  function sekToTimeStr(sek) {  // форматирование времени в секундах в DD HH:MM:SS
     let ost = Math.trunc(sek) % (3600 * 24);
     let dd = Math.trunc(sek / (3600 * 24));
 
@@ -103,10 +114,18 @@ app.get('/qInfoBar', async (req, res) => {
     let apTime = Math.trunc((Date.now() - sets[TIME_START].val) / 1000);  // выводим время работы приложения
 
     let dat = {
-      load: la,
-      sysUptime: sekToTimeStr(ut),
-      appUptime: sekToTimeStr(apTime),
-      usedRam: sets[LOAD_RAM].val
+      load:       la,
+      sysUptime:  sekToTimeStr(ut),
+      appUptime:  sekToTimeStr(apTime),
+      usedRam:    sets[LOAD_RAM].val,
+      tCpu:       sets[T_CPU].val,
+      tMb:        sets[T_MB].val,
+      tHdd:       sets[T_HDD].val,
+      tOutside:   sets[T_OUTSIDE].val,
+      tRoom1:     sets[T_ROOM1].val,
+      tBox:       sets[T_SERVBOX].val,
+      usedHdd:    sets[USED_HDD].val,
+      usedSwap:   sets[USED_SWAP].val
     };
 
     res.send(dat);

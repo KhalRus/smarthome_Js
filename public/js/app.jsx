@@ -18,14 +18,13 @@ function App() {
 
   useEffect(() => {  // вычисление высоты поля графика
     let w = window.innerWidth;
-    let hw = window.innerHeight;
     let h;
     if (w < 900) {
       h = Math.trunc(w / 1.77);
     } else if (w < 1400) {
       h = Math.trunc((w - 300) / 1.77);
     } else {
-      h = Math.trunc((hw - 175) / 2);
+      h = Math.trunc((window.innerHeight - 175) / 2);
     }
     setCHeight(h);
   });
@@ -56,6 +55,9 @@ function App() {
     case 4:
       mainChart = <TempMes height={cHeight} />;
       break;
+    case 5:
+      mainChart = <AppInfo />;
+      break;      
   }
 
   return (
@@ -67,13 +69,15 @@ function App() {
           <BurgerButton num="2" curr={nMenu} func={closeMenu} title="Трафик месячный" />
           <BurgerButton num="3" curr={nMenu} func={closeMenu} title="Сервер t сутки" />
           <BurgerButton num="4" curr={nMenu} func={closeMenu} title="Температура за месяц" />
+          <BurgerButton num="5" curr={nMenu} func={closeMenu} title="О проекте" />
         </Burger>
         <div className="menuInfo">
-          <MenuButton num="0" curr={nMenu} func={setMenu} title="Главная"/>
+          <MenuButton num="0" curr={nMenu} func={setMenu} title="Главная" />
           <MenuButton num="1" curr={nMenu} func={setMenu} title="Трафик суточный" />
           <MenuButton num="2" curr={nMenu} func={setMenu} title="Трафик месячный" />
           <MenuButton num="3" curr={nMenu} func={setMenu} title="Сервер t сутки" />
           <MenuButton num="4" curr={nMenu} func={setMenu} title="Температура за месяц" />
+          <MenuButton num="5" curr={nMenu} func={setMenu} title="О проекте" />
         </div>
         <InfoBar />
       </div>

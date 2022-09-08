@@ -23,24 +23,19 @@ export function logString(mTime, mErr, mMess) {
   let outStr = currTime.getFullYear() + '.';
 
   let td = currTime.getMonth() + 1;
-  outStr += td > 9 ? td : '0' + td;
-  outStr += '.';
+  outStr += (td > 9 ? td : '0' + td) + '.';
 
   td = currTime.getDate();
-  outStr += td > 9 ? td : '0' + td;
-  outStr += ' ';
+  outStr += (td > 9 ? td : '0' + td) + ' ';
 
   td = currTime.getHours();
-  outStr += td > 9 ? td : '0' + td;
-  outStr += ':';
+  outStr += (td > 9 ? td : '0' + td) + ':';
 
   td = currTime.getMinutes();
-  outStr += td > 9 ? td : '0' + td;
-  outStr += ':';
+  outStr += (td > 9 ? td : '0' + td) + ':';
 
   td = currTime.getSeconds();
-  outStr += td > 9 ? td : '0' + td;
-  outStr += ' ';
+  outStr += (td > 9 ? td : '0' + td) + ' ';
 
   if (mErr == AL_INFO) {
     outStr += 'info ';
@@ -63,7 +58,7 @@ function myParseInt(inStr, errStr) {
   }
 }
 
-// getHttps (getHttp) на промисах, возвращает Json
+// getHttps (getHttp) на промисах, возвращает объект
 function promiseGetHt(url) {
   return new Promise( (resolve, reject) => {
     let req;
@@ -219,13 +214,10 @@ async function initModule() {
   let currTime = currTimeD.getTime();
 
   try {
-    sets = JSON.parse(readFileSync('./doc/settings.json', 'utf8'));
-
-    for (let vlset of sets) {                // т.к. в Json нет Infinity, то заменяем вручную
-      for (let val in vlset) {
-        if (vlset[val] == "Infinity") vlset[val] = Infinity;
-      }
-    }
+    sets = JSON.parse(readFileSync('./doc/settings.json', 'utf8'), (key, val) => {
+      if (val == 'Infinity') return Infinity;  // т.к. в Json нет Infinity, то заменяем вручную
+      return val;
+    });
 
     sets[TIME_START].val = currTime;  // время запуска сервера
 
